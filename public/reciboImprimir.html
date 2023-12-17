@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recibo</title>
+  <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+  <div class="recibo-wrapper">
+    <div class="recibo-container">
+      <img src="https://via.placeholder.com/80" alt="Logo" class="recibo-logo">
+      <div class="recibo-title">Parqueadero Elegante</div>
+      <div class="recibo-message">Recibo</div>
+      <div class="recibo-message">Tipo: <%= recibo.tipo %></div>
+      <div class="recibo-message">Placa: <%= recibo.placa %></div>
+      <div class="recibo-message">Hora Ingreso: <%= recibo.horaIngreso %></div>
+      <div class="recibo-message">Hora Salida: <%= recibo.horaSalida %></div>
+      <div class="recibo-message">Tiempo: <%= recibo.tiempoTranscurrido %> minutos</div>
+      <div class="recibo-message">Costo: <%= recibo.costo %> pesos</div>
+      <div class="recibo-footer">
+        Gracias por elegir Parqueadero Elegante<br>
+        Teléfono: 123-456-7890 | Horario: 6 am - 8 pm<br>
+        Visítanos en: <a href="http://www.parqueadero-elegante.com" target="_blank">www.parqueadero-elegante.com</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

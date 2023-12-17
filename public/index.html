@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parqueadero</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    input {
+      margin-bottom: 10px;
+      padding: 8px;
+      width: 100%;
+    }
+
+    button {
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #chat-box {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .chat-message {
+      margin-bottom: 8px;
+      padding: 8px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <label for="placa">Placa:</label>
+    <input type="text" id="placa" placeholder="Ej. ABC123">
+
+    <label for="tipo">Tipo:</label>
+    <select id="tipo">
+      <option value="carro">Carro</option>
+      <option value="moto">Moto</option>
+    </select>
+
+    <button id="btnIngresar">Ingresar</button>
+    <button id="btnSalir">Salir</button>
+    <button id="btnRecibo">Recibo</button>
+
+    <div id="chat-box"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+  const inputPlaca = document.getElementById('placa');
+  const inputTipo = document.getElementById('tipo');
+  const btnIngresar = document.getElementById('btnIngresar');
+  const btnSalir = document.getElementById('btnSalir');
+  const btnRecibo = document.getElementById('btnRecibo');
+  const chatBox = document.getElementById('chat-box');
+  const reciboBox = document.getElementById('recibo-box');
+
+  btnIngresar.addEventListener('click', async () => {
+    const placa = inputPlaca.value.toUpperCase();
+    const tipo = inputTipo.value;
+
+    try {
+      const response = await fetch('/parqueadero/ingreso', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ placa, tipo }),
+      });
+
+      const data = await response.json();
+
+      // Muestra el mensaje en el chat-box
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'chat-message';
+      messageDiv.innerText = data.message;
+      chatBox.appendChild(messageDiv);
+
+      // Limpia el campo de la placa
+      inputPlaca.value = '';
+    } catch (error) {
+      console.error(error);
+      chatBox.innerHTML += '<div class="chat-message">Error al procesar la solicitud.</div>';
+    }
+  });
+
+  btnSalir.addEventListener('click', async () => {
+    const placa = inputPlaca.value.toUpperCase();
+
+    try {
+      const response = await fetch('/parqueadero/salida', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ placa }),
+      });
+
+      const data = await response.json();
+
+      // Muestra el mensaje en el chat-box
+      const messageDiv = document.createElement('div');
+      messageDiv.className = 'chat-message';
+      messageDiv.innerText = data.message;
+      chatBox.appendChild(messageDiv);
+
+      // Limpia el campo de la placa
+      inputPlaca.value = '';
+    } catch (error) {
+      console.error(error);
+      chatBox.innerHTML += '<div class="chat-message">Error al procesar la solicitud.</div>';
+    }
+  });
+
+  btnRecibo.addEventListener('click', async () => {
+    const placa = inputPlaca.value.toUpperCase();
+
+    try {
+      const response = await fetch(`/parqueadero/recibo/${placa}`);
+      const data = await response.json();
+
+      const recibo = data.recibo;
+      const reciboHtml = `
+        <div class="recibo-container">
+          <div class="recibo-message">Recibo</div>
+          <div class="recibo-message">Tipo: ${recibo.tipo}</div>
+          <div class="recibo-message">Placa: ${recibo.placa}</div>
+          <div class="recibo-message">Hora Ingreso: ${recibo.horaIngreso}</div>
+          <div class="recibo-message">Hora Salida: ${recibo.horaSalida}</div>
+          <div class="recibo-message">Tiempo: ${recibo.tiempoTranscurrido} minutos</div>
+          <div class="recibo-message">Costo: ${recibo.costo} pesos</div>
+          </div>
+        <div class="recibo-footer">
+          Gracias por elegir Parqueadero Elegante<br>
+          Teléfono: 123-456-7890 | Horario: 6 am - 8 pm<br>
+          Visítanos en: <a href="http://www.parqueadero-elegante.com" target="_blank">www.parqueadero-elegante.com</a>
+          </div>
+      `;
+
+      const reciboWindow = window.open('', '_blank');
+      reciboWindow.document.write(reciboHtml);
+
+      // Limpia el campo de la placa
+      inputPlaca.value = '';
+    } catch (error) {
+      console.error(error);
+      reciboBox.innerHTML = '<div class="chat-message">Error al procesar la solicitud.</div>';
+    }
+  });
+});
+
+  </script>
+</body>
+</html>
